@@ -1,5 +1,2 @@
-module Seglib
-
-# package code goes here
-
-end # module
+include("segbase.jl")
+include("plot.jl")
