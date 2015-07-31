@@ -132,3 +132,42 @@ function seg2boundaryindex{T<:Integer}(seg::Matrix{T})
 
     Vector{(Int, Int)}[unique(map(ys -> inorder(ys[1], ys[2]), filter(zs -> zs[1] != zs[2], unfiltered[i, j]))) for i = 1:tx, j = 1:ty]
 end
+
+function seg2boundarystrength{T1<:Integer,T2<:FloatingPoint}(spmat::Matrix{T1}, strengths::Dict{NTuple{2,T1},T2})
+    nrows, ncols = size(spmat)
+    
+    rval = zeros(T2, 2nrows+1, 2ncols+1)
+    hedges = hcat(!(spmat[:, 1:end-1] .== spmat[:, 2:end]), zeros(T2, nrows, 1))
+    vedges = vcat(!(spmat[1:end-1, :] .== spmat[2:end, :]), zeros(T2, 1, ncols))
+    
+    hedges = zeros(T2, nrows, ncols)
+    for j = 1:ncols-1
+        for i = 1:nrows
+            if spmat[i, j] != spmat[i, j+1]
+                hedges[i, j] = strengths[spmat[i, j], spmat[i, j+1]]
+            end
+        end
+    end
+    
+    vedges = zeros(T2, nrows, ncols)
+    for j = 1:ncols
+        for i = 1:nrows-1
+            if spmat[i, j] != spmat[i+1, j]
+                vedges[i, j] = strengths[spmat[i, j], spmat[i+1, j]]
+            end
+        end
+    end
+    
+    rval[3:2:end, 2:2:end] = vedges
+    rval[2:2:end, 3:2:end] = hedges
+    rval[3:2:end-1, 3:2:end-1] = max(hedges[1:end-1, 1:end-1],
+                                     hedges[2:end, 1:end-1],
+                                     vedges[1:end-1, 1:end-1],
+                                     vedges[1:end-1, 2:end])
+    rval[1, :] = rval[2, :]
+    rval[:, 1] = rval[:, 2]
+    rval[end, :] = rval[end-1, :]
+    rval[:, end] = rval[:, end-1]
+    
+    rval[3:2:end, 3:2:end]
+end

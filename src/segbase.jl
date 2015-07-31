@@ -6,6 +6,7 @@ export
     contingencymatrix,
     seg2boundary,
     seg2boundaryindex,
+    seg2boundarystrength,
     spdist
 
 include("superpixel.jl")
@@ -19,17 +20,17 @@ matlab_homepath = begin
     end
 end
 
-if !is(matlab_homepath, nothing)
-    include("matlab.jl")
-
-    export
-        @mquiet,
-        slic,
-        thinboundary,
-        correspondpixels,
-        gPb,
-        ucm_regions,
-        ucm_strength
-end
+#if !is(matlab_homepath, nothing)
+#    include("matlab.jl")
+#
+#    export
+#        @mquiet,
+#        slic,
+#        thinboundary,
+#        correspondpixels,
+#        gPb,
+#        ucm_regions,
+#        ucm_strength
+#end
 
 end # module
